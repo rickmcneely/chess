@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Server</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="app">
+        <div id="auth-container" class="container">
+            <h1>Chess Server</h1>
+            <div id="login-form" class="auth-form">
+                <h2>Login</h2>
+                <input type="text" id="login-username" placeholder="Username">
+                <input type="password" id="login-password" placeholder="Password">
+                <button onclick="login()">Login</button>
+                <p>Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+            </div>
+            <div id="register-form" class="auth-form" style="display: none;">
+                <h2>Register</h2>
+                <input type="text" id="register-username" placeholder="Username">
+                <input type="email" id="register-email" placeholder="Email Address">
+                <input type="password" id="register-password" placeholder="Password">
+                <button onclick="register()">Register</button>
+                <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+            </div>
+            <div id="auth-message" class="message"></div>
+        </div>
+
+        <div id="main-container" class="container" style="display: none;">
+            <header>
+                <h1>Chess Server</h1>
+                <div id="user-info">
+                    <span id="current-user"></span>
+                    <span id="user-rating"></span>
+                    <button onclick="logout()">Logout</button>
+                    <button id="admin-btn" onclick="showAdminPanel()" style="display: none;">Admin</button>
+                </div>
+            </header>
+
+            <div id="game-container">
+                <div id="left-panel">
+                    <div id="online-users">
+                        <h3>Online Users</h3>
+                        <ul id="users-list"></ul>
+                    </div>
+                    <div id="leaderboard">
+                        <h3>Leaderboard</h3>
+                        <ol id="leaderboard-list"></ol>
+                    </div>
+                </div>
+
+                <div id="center-panel">
+                    <div id="game-info" style="display: none;">
+                        <span id="opponent-name"></span>
+                        <span id="game-status"></span>
+                    </div>
+                    <div id="chess-board"></div>
+                    <div id="game-controls" style="display: none;">
+                        <button onclick="resignGame()">Resign</button>
+                    </div>
+                    <div id="no-game-message">
+                        <p>Select an online user to invite them to a game</p>
+                    </div>
+                </div>
+
+                <div id="right-panel">
+                    <div id="chat-container">
+                        <h3>Chat</h3>
+                        <div id="chat-messages"></div>
+                        <div id="chat-input-container">
+                            <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="handleChatKeypress(event)">
+                            <button onclick="sendChat()">Send</button>
+                        </div>
+                    </div>
+                    <div id="direct-messages">
+                        <h3>Direct Messages</h3>
+                        <div id="dm-messages"></div>
+                        <div id="dm-input-container">
+                            <input type="text" id="dm-input" placeholder="@username message" onkeypress="handleDMKeypress(event)">
+                            <button onclick="sendDM()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-panel" class="container" style="display: none;">
+            <header>
+                <h1>Admin Panel</h1>
+                <button onclick="hideAdminPanel()">Back to Game</button>
+            </header>
+
+            <div id="admin-content">
+                <div id="pending-users-section">
+                    <h3>Pending Users</h3>
+                    <ul id="pending-users-list"></ul>
+                </div>
+
+                <div id="settings-section">
+                    <h3>Settings</h3>
+                    <label>
+                        <input type="checkbox" id="profanity-filter-toggle" onchange="toggleProfanityFilter()">
+                        Enable Profanity Filter
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" id="profanity-auto-warn-toggle" onchange="toggleProfanityAutoWarn()">
+                        Auto-warn users for profanity
+                    </label>
+                </div>
+
+                <div id="all-users-section">
+                    <h3>All Users</h3>
+                    <table id="all-users-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Rating</th>
+                                <th>Games</th>
+                                <th>W/L/D</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-users-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="invite-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Game Invitation</h3>
+                <p id="invite-message"></p>
+                <button onclick="acceptInvite()">Accept</button>
+                <button onclick="declineInvite()">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

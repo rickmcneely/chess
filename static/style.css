@@ -1,0 +1,513 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a2e;
+    color: #eee;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+#auth-container h1 {
+    margin-bottom: 30px;
+    color: #4ecdc4;
+}
+
+.auth-form {
+    background: #16213e;
+    padding: 30px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+.auth-form h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    background: #0f3460;
+    color: #eee;
+}
+
+.auth-form button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #4ecdc4;
+    color: #1a1a2e;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.auth-form button:hover {
+    background: #45b7aa;
+}
+
+.auth-form p {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.auth-form a {
+    color: #4ecdc4;
+}
+
+#auth-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#auth-message.error {
+    background: #ff6b6b;
+    color: #fff;
+}
+
+#auth-message.success {
+    background: #4ecdc4;
+    color: #1a1a2e;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #0f3460;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    color: #4ecdc4;
+}
+
+#user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#user-info button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#user-info button:first-of-type {
+    background: #ff6b6b;
+    color: #fff;
+}
+
+#admin-btn {
+    background: #ffd93d !important;
+    color: #1a1a2e !important;
+}
+
+#game-container {
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;
+    gap: 20px;
+}
+
+#left-panel, #right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#online-users, #leaderboard, #chat-container, #direct-messages {
+    background: #16213e;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+#online-users h3, #leaderboard h3, #chat-container h3, #direct-messages h3 {
+    margin-bottom: 10px;
+    color: #4ecdc4;
+}
+
+#users-list, #leaderboard-list {
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#users-list li, #leaderboard-list li {
+    padding: 8px;
+    margin-bottom: 5px;
+    background: #0f3460;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#users-list li:hover {
+    background: #1a4a8a;
+}
+
+#users-list li.in-game {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.invite-btn {
+    padding: 3px 8px;
+    font-size: 12px;
+    background: #4ecdc4;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #1a1a2e;
+}
+
+#center-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#game-info {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 20px;
+    font-size: 18px;
+}
+
+#opponent-name {
+    color: #4ecdc4;
+}
+
+#game-status {
+    color: #ffd93d;
+}
+
+#chess-board {
+    display: grid;
+    grid-template-columns: repeat(8, 60px);
+    grid-template-rows: repeat(8, 60px);
+    border: 3px solid #0f3460;
+}
+
+.square {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 44px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.square.light {
+    background: #f0d9b5;
+}
+
+.square.dark {
+    background: #b58863;
+}
+
+.square.white-piece {
+    color: #fff;
+    text-shadow: 0 0 2px #000, 0 0 2px #000, 1px 1px 1px #000;
+}
+
+.square.black-piece {
+    color: #000;
+    text-shadow: 0 0 2px #fff, 0 0 1px #fff;
+}
+
+.square.selected {
+    background: #baca44 !important;
+}
+
+.square.valid-move {
+    position: relative;
+}
+
+.square.valid-move::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+}
+
+.square.valid-capture::after {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    background: none;
+}
+
+.square.last-move {
+    background: #f7f769 !important;
+}
+
+#game-controls {
+    margin-top: 15px;
+}
+
+#game-controls button {
+    padding: 10px 20px;
+    background: #ff6b6b;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#no-game-message {
+    margin-top: 20px;
+    text-align: center;
+    color: #888;
+}
+
+#chat-messages, #dm-messages {
+    height: 150px;
+    overflow-y: auto;
+    background: #0f3460;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.chat-message {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.chat-message .username {
+    color: #4ecdc4;
+    font-weight: bold;
+}
+
+.chat-message .content {
+    color: #eee;
+}
+
+#chat-input-container, #dm-input-container {
+    display: flex;
+    gap: 5px;
+}
+
+#chat-input, #dm-input {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background: #0f3460;
+    color: #eee;
+}
+
+#chat-input-container button, #dm-input-container button {
+    padding: 8px 15px;
+    background: #4ecdc4;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #1a1a2e;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #16213e;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.modal-content h3 {
+    margin-bottom: 15px;
+    color: #4ecdc4;
+}
+
+.modal-content p {
+    margin-bottom: 20px;
+}
+
+.modal-content button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.modal-content button:first-of-type {
+    background: #4ecdc4;
+    color: #1a1a2e;
+}
+
+.modal-content button:last-of-type {
+    background: #ff6b6b;
+    color: #fff;
+}
+
+#admin-panel header {
+    margin-bottom: 30px;
+}
+
+#admin-panel header button {
+    padding: 10px 20px;
+    background: #4ecdc4;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #1a1a2e;
+}
+
+#admin-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+#pending-users-section, #settings-section, #all-users-section {
+    background: #16213e;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#all-users-section {
+    grid-column: 1 / -1;
+}
+
+#pending-users-section h3, #settings-section h3, #all-users-section h3 {
+    margin-bottom: 15px;
+    color: #4ecdc4;
+}
+
+#pending-users-list {
+    list-style: none;
+}
+
+#pending-users-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #0f3460;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+#pending-users-list button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+#pending-users-list button.approve {
+    background: #4ecdc4;
+    color: #1a1a2e;
+}
+
+#pending-users-list button.reject {
+    background: #ff6b6b;
+    color: #fff;
+}
+
+#settings-section label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+#settings-section input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+#all-users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#all-users-table th, #all-users-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #0f3460;
+}
+
+#all-users-table th {
+    background: #0f3460;
+}
+
+#all-users-table tr:hover {
+    background: #0f3460;
+}
+
+.status-approved {
+    color: #4ecdc4;
+}
+
+.status-pending {
+    color: #ffd93d;
+}
+
+@media (max-width: 1200px) {
+    #game-container {
+        grid-template-columns: 1fr;
+    }
+
+    #left-panel, #right-panel {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    #online-users, #leaderboard, #chat-container, #direct-messages {
+        flex: 1;
+        min-width: 200px;
+    }
+}
