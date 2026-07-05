@@ -149,6 +149,28 @@ func RejectUser(userID int) error {
 	return err
 }
 
+func DeleteUser(userID int) error {
+	// Don't allow deleting admin users
+	var isAdmin bool
+	err := database.DB.QueryRow("SELECT is_admin FROM users WHERE id = ?", userID).Scan(&isAdmin)
+	if err != nil {
+		return err
+	}
+	if isAdmin {
+		return nil // Silently ignore admin deletion
+	}
+
+	// Delete user's messages
+	database.DB.Exec("DELETE FROM messages WHERE from_user_id = ? OR to_user_id = ?", userID, userID)
+
+	// Delete user's games
+	database.DB.Exec("DELETE FROM games WHERE white_user_id = ? OR black_user_id = ?", userID, userID)
+
+	// Delete the user
+	_, err = database.DB.Exec("DELETE FROM users WHERE id = ? AND is_admin = FALSE", userID)
+	return err
+}
+
 func (u *User) UpdateLastGame(opponentID int, color string) error {
 	_, err := database.DB.Exec(
 		"UPDATE users SET last_opponent_id = ?, last_color = ? WHERE id = ?",

@@ -132,25 +132,95 @@ header h1 {
 
 #game-container {
     display: grid;
-    grid-template-columns: 250px 1fr 300px;
-    gap: 20px;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 15px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 #left-panel, #right-panel {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
+    min-width: 280px;
+    width: 100%;
 }
 
-#online-users, #leaderboard, #chat-container, #direct-messages {
+#online-users, #leaderboard, #chat-container, #play-ai-section, #active-games-section {
     background: #16213e;
     padding: 15px;
     border-radius: 10px;
+    width: 100%;
+}
+
+#chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#play-ai-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#play-ai-section h3 {
+    margin-bottom: 5px;
+}
+
+#play-ai-section select {
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background: #0f3460;
+    color: #eee;
+}
+
+#play-ai-section button {
+    padding: 10px;
+    background: #4ecdc4;
+    color: #1a1a2e;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#play-ai-section button:hover {
+    background: #45b7aa;
 }
 
 #online-users h3, #leaderboard h3, #chat-container h3, #direct-messages h3 {
     margin-bottom: 10px;
     color: #4ecdc4;
+}
+
+#invite-time-control {
+    margin-bottom: 10px;
+}
+
+#invite-time-control label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #888;
+}
+
+#invite-time-control select, #time-control {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background: #0f3460;
+    color: #eee;
+    cursor: pointer;
+}
+
+#invite-time-control-display {
+    color: #4ecdc4;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
 #users-list, #leaderboard-list {
@@ -277,6 +347,47 @@ header h1 {
     background: #f7f769 !important;
 }
 
+/* Chess Clock Styles */
+#clock-container, #clock-container-bottom {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.clock {
+    font-size: 28px;
+    font-weight: bold;
+    padding: 10px 25px;
+    background: #0f3460;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    min-width: 100px;
+    text-align: center;
+    color: #888;
+    transition: all 0.2s ease;
+}
+
+.clock.clock-active {
+    background: #16213e;
+    color: #4ecdc4;
+    box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+}
+
+.clock.clock-low {
+    color: #ffd93d;
+    animation: pulse 1s infinite;
+}
+
+.clock.clock-critical {
+    color: #ff6b6b;
+    animation: pulse 0.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
 #game-controls {
     margin-top: 15px;
 }
@@ -297,8 +408,10 @@ header h1 {
     color: #888;
 }
 
-#chat-messages, #dm-messages {
-    height: 150px;
+#chat-messages {
+    flex: 1;
+    min-height: 200px;
+    max-height: 400px;
     overflow-y: auto;
     background: #0f3460;
     padding: 10px;
@@ -309,6 +422,8 @@ header h1 {
 .chat-message {
     margin-bottom: 8px;
     font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
 .chat-message .username {
@@ -318,6 +433,51 @@ header h1 {
 
 .chat-message .content {
     color: #eee;
+}
+
+.chat-message.own-message {
+    background: rgba(78, 205, 196, 0.1);
+}
+
+.chat-message.dm-message {
+    background: rgba(255, 217, 61, 0.1);
+    border-left: 3px solid #ffd93d;
+}
+
+.chat-message.dm-message .username::before {
+    content: "[DM] ";
+    color: #ffd93d;
+}
+
+#chat-hint {
+    display: none;
+    font-size: 12px;
+    color: #ffd93d;
+    padding: 5px;
+    text-align: center;
+}
+
+.chat-message.stored-message {
+    opacity: 0.9;
+}
+
+.stored-badge {
+    background: #ff6b6b;
+    color: #fff;
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.read-indicator {
+    text-align: center;
+    font-size: 11px;
+    color: #4ecdc4;
+    padding: 5px;
+    font-style: italic;
+    opacity: 0.8;
 }
 
 #chat-input-container, #dm-input-container {
@@ -494,6 +654,157 @@ header h1 {
 
 .status-pending {
     color: #ffd93d;
+}
+
+.delete-btn {
+    padding: 5px 10px;
+    background: #ff6b6b;
+    border: none;
+    border-radius: 3px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.delete-btn:hover {
+    background: #e55555;
+}
+
+/* Active Games / Observer Section */
+#active-games-section h3 {
+    margin-bottom: 10px;
+    color: #4ecdc4;
+}
+
+.refresh-btn {
+    padding: 5px 10px;
+    background: #0f3460;
+    border: none;
+    border-radius: 5px;
+    color: #4ecdc4;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.refresh-btn:hover {
+    background: #1a4a8a;
+}
+
+#active-games-list {
+    list-style: none;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.active-game-item {
+    padding: 8px;
+    margin-bottom: 5px;
+    background: #0f3460;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.game-info {
+    font-size: 13px;
+    flex: 1;
+}
+
+.observer-count {
+    font-size: 11px;
+    color: #4ecdc4;
+    margin-right: 10px;
+}
+
+.watch-btn {
+    padding: 3px 8px;
+    font-size: 11px;
+    background: #4ecdc4;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #1a1a2e;
+}
+
+.watch-btn:hover {
+    background: #45b7aa;
+}
+
+.no-games {
+    color: #888;
+    font-size: 13px;
+    padding: 10px;
+}
+
+/* Observer Controls */
+#observer-controls {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#observer-controls button {
+    padding: 10px 20px;
+    background: #ff6b6b;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.view-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #ccc;
+}
+
+.view-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* 3D Board Styles */
+.board-3d {
+    transform: perspective(800px) rotateX(45deg);
+    transform-style: preserve-3d;
+}
+
+.square-3d {
+    transform-style: preserve-3d;
+    position: relative;
+}
+
+.square-3d.light {
+    background: linear-gradient(135deg, #f5e6c8 0%, #e8d5b0 100%);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+}
+
+.square-3d.dark {
+    background: linear-gradient(135deg, #b58863 0%, #8b6239 100%);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+}
+
+.piece-3d {
+    display: inline-block;
+    transform: translateZ(20px) rotateX(-45deg);
+    text-shadow: 2px 4px 6px rgba(0,0,0,0.5);
+    filter: drop-shadow(2px 4px 3px rgba(0,0,0,0.4));
+}
+
+.board-3d .square {
+    border: 1px solid rgba(0,0,0,0.2);
 }
 
 @media (max-width: 1200px) {

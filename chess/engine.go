@@ -747,16 +747,159 @@ func (b *Board) IsStalemate() bool {
 }
 
 func (b *Board) GetGameStatus() string {
+	return b.GetGameStatusWithHistory(nil)
+}
+
+func (b *Board) GetGameStatusWithHistory(positionHistory []string) string {
 	if b.IsCheckmate() {
 		return "checkmate"
 	}
 	if b.IsStalemate() {
 		return "stalemate"
 	}
+	if b.HasInsufficientMaterial() {
+		return "draw_insufficient"
+	}
+	if b.Is50MoveRuleDraw() {
+		return "draw_50move"
+	}
+	if b.IsThreefoldRepetition(positionHistory) {
+		return "draw_repetition"
+	}
 	if b.IsInCheck(b.WhiteToMove) {
 		return "check"
 	}
 	return "active"
+}
+
+// PositionKey returns a unique key for the current position (FEN without move counters)
+// Used for threefold repetition detection
+func (b *Board) PositionKey() string {
+	var fen strings.Builder
+
+	for r := 0; r < 8; r++ {
+		empty := 0
+		for c := 0; c < 8; c++ {
+			piece := b.Squares[r][c]
+			if piece == Empty {
+				empty++
+			} else {
+				if empty > 0 {
+					fen.WriteString(fmt.Sprintf("%d", empty))
+					empty = 0
+				}
+				fen.WriteRune(pieceToChar(piece))
+			}
+		}
+		if empty > 0 {
+			fen.WriteString(fmt.Sprintf("%d", empty))
+		}
+		if r < 7 {
+			fen.WriteString("/")
+		}
+	}
+
+	if b.WhiteToMove {
+		fen.WriteString(" w ")
+	} else {
+		fen.WriteString(" b ")
+	}
+
+	fen.WriteString(b.CastlingRights)
+	fen.WriteString(" ")
+	fen.WriteString(b.EnPassantSquare)
+
+	return fen.String()
+}
+
+// IsThreefoldRepetition checks if the current position has occurred 3 times
+func (b *Board) IsThreefoldRepetition(positionHistory []string) bool {
+	if positionHistory == nil {
+		return false
+	}
+
+	currentKey := b.PositionKey()
+	count := 1 // Current position counts as 1
+
+	for _, key := range positionHistory {
+		if key == currentKey {
+			count++
+			if count >= 3 {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// Is50MoveRuleDraw checks if 50 moves have been made without a pawn move or capture
+func (b *Board) Is50MoveRuleDraw() bool {
+	return b.HalfMoveClock >= 100 // 100 half-moves = 50 full moves
+}
+
+// HasInsufficientMaterial checks if neither side can checkmate
+func (b *Board) HasInsufficientMaterial() bool {
+	var whitePieces, blackPieces []int
+	var whiteBishopSquareColor, blackBishopSquareColor int // 0=none, 1=light, 2=dark
+
+	for r := 0; r < 8; r++ {
+		for c := 0; c < 8; c++ {
+			piece := b.Squares[r][c]
+			if piece == Empty {
+				continue
+			}
+
+			squareColor := (r + c) % 2 // 0=dark, 1=light
+
+			if isWhitePiece(piece) {
+				if piece != WhiteKing {
+					whitePieces = append(whitePieces, piece)
+				}
+				if piece == WhiteBishop {
+					whiteBishopSquareColor = squareColor + 1
+				}
+			} else {
+				if piece != BlackKing {
+					blackPieces = append(blackPieces, piece)
+				}
+				if piece == BlackBishop {
+					blackBishopSquareColor = squareColor + 1
+				}
+			}
+		}
+	}
+
+	whiteCount := len(whitePieces)
+	blackCount := len(blackPieces)
+
+	// King vs King
+	if whiteCount == 0 && blackCount == 0 {
+		return true
+	}
+
+	// King + minor piece vs King
+	if whiteCount == 0 && blackCount == 1 {
+		if blackPieces[0] == BlackKnight || blackPieces[0] == BlackBishop {
+			return true
+		}
+	}
+	if blackCount == 0 && whiteCount == 1 {
+		if whitePieces[0] == WhiteKnight || whitePieces[0] == WhiteBishop {
+			return true
+		}
+	}
+
+	// King + Bishop vs King + Bishop (same color squares)
+	if whiteCount == 1 && blackCount == 1 {
+		if whitePieces[0] == WhiteBishop && blackPieces[0] == BlackBishop {
+			if whiteBishopSquareColor == blackBishopSquareColor {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func abs(x int) int {

@@ -60,6 +60,7 @@ func createTables() error {
 		white_user_id INTEGER NOT NULL,
 		black_user_id INTEGER NOT NULL,
 		moves TEXT DEFAULT '[]',
+		position_history TEXT DEFAULT '[]',
 		fen TEXT DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
 		status TEXT DEFAULT 'active',
 		winner_id INTEGER DEFAULT NULL,
@@ -134,4 +135,78 @@ func initializeSettings() error {
 		INSERT OR IGNORE INTO settings (key, value) VALUES ('profanity_filter', 'true')
 	`)
 	return err
+}
+
+func CreateComputerUser() (int, error) {
+	// Check if Computer user already exists
+	var id int
+	err := DB.QueryRow("SELECT id FROM users WHERE username = 'Computer'").Scan(&id)
+	if err == nil {
+		return id, nil // Already exists
+	}
+
+	// Create Computer user (no password needed, can't login)
+	result, err := DB.Exec(
+		"INSERT INTO users (username, email, password_hash, is_admin, approved) VALUES (?, ?, ?, FALSE, TRUE)",
+		"Computer", "computer@chess.local", "AI_NO_LOGIN",
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	lastID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	log.Println("Created Computer user for AI games")
+	return int(lastID), nil
+}
+
+func GetComputerUserID() int {
+	var id int
+	err := DB.QueryRow("SELECT id FROM users WHERE username = 'Computer'").Scan(&id)
+	if err != nil {
+		return 0
+	}
+	return id
+}
+
+func RunMigrations() error {
+	// Add position_history column if it doesn't exist
+	_, err := DB.Exec("ALTER TABLE games ADD COLUMN position_history TEXT DEFAULT '[]'")
+	if err != nil {
+		// Column likely already exists, ignore error
+		log.Printf("Migration note: %v", err)
+	}
+
+	// Add clock columns for timed games
+	clockMigrations := []string{
+		"ALTER TABLE games ADD COLUMN time_control_ms INTEGER DEFAULT NULL",
+		"ALTER TABLE games ADD COLUMN increment_ms INTEGER DEFAULT 0",
+		"ALTER TABLE games ADD COLUMN white_time_remaining INTEGER DEFAULT NULL",
+		"ALTER TABLE games ADD COLUMN black_time_remaining INTEGER DEFAULT NULL",
+		"ALTER TABLE games ADD COLUMN last_move_at DATETIME DEFAULT NULL",
+	}
+
+	for _, migration := range clockMigrations {
+		_, err := DB.Exec(migration)
+		if err != nil {
+			log.Printf("Migration note: %v", err)
+		}
+	}
+
+	// Add delivered flag for store-and-forward messages
+	_, err = DB.Exec("ALTER TABLE messages ADD COLUMN delivered BOOLEAN DEFAULT FALSE")
+	if err != nil {
+		log.Printf("Migration note: %v", err)
+	}
+
+	// Add read_at timestamp for read receipts
+	_, err = DB.Exec("ALTER TABLE messages ADD COLUMN read_at DATETIME DEFAULT NULL")
+	if err != nil {
+		log.Printf("Migration note: %v", err)
+	}
+
+	return nil
 }

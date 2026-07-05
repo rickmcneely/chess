@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ecdc4"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="8" fill="url(#bg)"/>
+  <g transform="translate(12, 6) scale(0.8)">
+    <!-- Chess Knight -->
+    <path d="M20 58 L30 58 L30 52 L20 52 Z" fill="#fff"/>
+    <path d="M15 52 L35 52 L35 48 L15 48 Z" fill="#fff"/>
+    <path d="M18 48 C18 48 16 40 18 32 C20 24 22 20 26 16 C28 14 32 12 34 14 C36 16 36 20 34 24 C32 28 28 30 28 30 L32 30 C32 30 38 26 40 20 C42 14 40 8 36 6 C32 4 26 6 22 10 C18 14 14 22 12 32 C10 42 12 48 12 48 Z" fill="#fff"/>
+    <circle cx="22" cy="18" r="2" fill="#1a1a2e"/>
+    <path d="M16 28 C16 28 14 26 12 28 C10 30 12 32 14 32 C16 32 18 30 16 28 Z" fill="#fff"/>
+  </g>
+</svg>

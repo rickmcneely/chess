@@ -25,6 +25,17 @@ func main() {
 		log.Fatal("Failed to initialize database:", err)
 	}
 
+	// Run migrations for existing databases
+	database.RunMigrations()
+
+	// Create Computer user for AI games
+	computerID, err := database.CreateComputerUser()
+	if err != nil {
+		log.Printf("Warning: Could not create Computer user: %v", err)
+	} else {
+		handlers.ComputerUserID = computerID
+	}
+
 	handlers.GameHub = handlers.NewHub()
 	go handlers.GameHub.Run()
 
@@ -49,6 +60,7 @@ func main() {
 	r.HandleFunc("/api/admin/settings", handlers.AdminMiddleware(handlers.HandleGetSettings)).Methods("GET")
 	r.HandleFunc("/api/admin/settings", handlers.AdminMiddleware(handlers.HandleUpdateSettings)).Methods("POST")
 	r.HandleFunc("/api/admin/users", handlers.AdminMiddleware(handlers.HandleGetAllUsers)).Methods("GET")
+	r.HandleFunc("/api/admin/delete", handlers.AdminMiddleware(handlers.HandleDeleteUser)).Methods("POST")
 
 	r.HandleFunc("/api/leaderboard", handlers.HandleLeaderboard).Methods("GET")
 	r.HandleFunc("/api/online", handlers.HandleOnlineUsers).Methods("GET")

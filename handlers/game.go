@@ -69,12 +69,20 @@ func HandleGetActiveGame(w http.ResponseWriter, r *http.Request) {
 		blackUsername = blackUser.Username
 	}
 
-	sendJSON(w, map[string]interface{}{
+	response := map[string]interface{}{
 		"success":        true,
 		"game":           game,
 		"white_username": whiteUsername,
 		"black_username": blackUsername,
-	})
+	}
+
+	// Include calculated remaining times for reconnect scenario
+	if game.IsTimed() {
+		response["white_time_remaining"] = game.GetWhiteTimeRemaining()
+		response["black_time_remaining"] = game.GetBlackTimeRemaining()
+	}
+
+	sendJSON(w, response)
 }
 
 func HandleGetGameHistory(w http.ResponseWriter, r *http.Request) {

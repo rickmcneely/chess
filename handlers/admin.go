@@ -4,7 +4,6 @@ import (
 	"chess-server/models"
 	"encoding/json"
 	"net/http"
-	"strconv"
 )
 
 func AdminMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -149,14 +148,15 @@ func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userIDStr := r.URL.Query().Get("id")
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		sendJSON(w, map[string]interface{}{"success": false, "message": "Invalid user ID"})
+	var req struct {
+		UserID int `json:"user_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		sendJSON(w, map[string]interface{}{"success": false, "message": "Invalid request"})
 		return
 	}
 
-	user, err := models.GetUserByID(userID)
+	user, err := models.GetUserByID(req.UserID)
 	if err != nil {
 		sendJSON(w, map[string]interface{}{"success": false, "message": "User not found"})
 		return
@@ -167,7 +167,7 @@ func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.RejectUser(userID); err != nil {
+	if err := models.DeleteUser(req.UserID); err != nil {
 		sendJSON(w, map[string]interface{}{"success": false, "message": "Failed to delete user"})
 		return
 	}

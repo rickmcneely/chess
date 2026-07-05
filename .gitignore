@@ -1,0 +1,8 @@
+# Compiled binaries
+chess-server
+chess-server-arm
+chess-server-arm64
+chess/chess-server
+
+# Local database
+chess.db
